@@ -7,8 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const corsOptions: CorsOptions = {
-    // origin: 'https://lingomaster.vercel.app',
-    origin: 'http://localhost:4200',
+    origin: 'https://lingomaster.vercel.app',
+    // origin: 'http://localhost:4200',
     methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
     allowedHeaders: ['Content-Type', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials','Cookie', 'Authorization',],
     preflightContinue: false,
