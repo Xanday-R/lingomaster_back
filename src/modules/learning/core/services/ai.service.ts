@@ -16,7 +16,7 @@ export class AiService {
     async generateText(input: generationTextDto):Promise<string>  {
         const result = await this.herc.question({
             model: 'v3',
-            content: `Generate interesting ${input.format} more than 10 sentences on a topic '${input.topic}' in ${input.language} level ${input.level} using words: ${input.words.join(', ')}, these words don't must not have repeats and must be in brackets, but you shouldn't save their word's forms. In reply must be only the ${input.format} and all the words which I wrote.`,
+            content: `Generate interesting ${input.format} more than 10 sentences on a topic '${input.topic}' in ${input.language} level ${input.level} using words: ${input.words.join(', ')}, these words don't must not have repeats and must be in brackets, but you shouldn't save their word's forms. In reply must be only the ${input.format} and all the words and have brackets which I wrote.`,
         });
         return result.reply;
     }
