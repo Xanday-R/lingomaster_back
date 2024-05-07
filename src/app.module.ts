@@ -32,7 +32,6 @@ import * as cookieParser from 'cookie-parser';
   imports: [AuthModule, ProfileModule, LearningModule],
   controllers: [AppController],
   providers: [
-
     {
       provide: 'db',
       useValue: knexManager

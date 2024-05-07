@@ -8,8 +8,8 @@ export class AlgorithmService {
 
     constructor(@Inject('ai') private aiService: AiService, @Inject('vocabulary') private vocabularyService: VocabularyService) {
     }
-    async start(model: ModelsPractice, text:string, languageText:Languages, languageTranslate: Languages) {
-        if(model === ModelsPractice.insertingWordTranslation || model === ModelsPractice.writingWordTranslation) return this.generateContentForWordTranslation(text, languageText, languageTranslate);
+    async start(model: ModelsPractice, text:string, languageText:Languages, languageTranslate: Languages, id_text: number) {
+        if(model === ModelsPractice.insertingWordTranslation || model === ModelsPractice.writingWordTranslation) return this.generateContentForWordTranslation(text, languageText, languageTranslate, id_text);
         else return this.generateContentForMissWords(text);
     }
 
@@ -47,18 +47,28 @@ export class AlgorithmService {
         return answers;
     }
 
-    private async generateContentForWordTranslation(text:string, languageText:Languages, languageTranslate: Languages) {
-        const answers:IPracticeInfo['answers'] = [];
-        const result  = this.findWordPosition(text);
-        for (const e of result) {
-            let answer = await this.vocabularyService.getTranslation(e.original, languageText, languageTranslate, e.sentence);
-            if(!answer) {
-                answer = await this.aiService.translateWordOrPhrase(e.sentence, e.original, languageText, languageTranslate);
-                await this.vocabularyService.add(languageText, languageTranslate, e.original, answer, e.sentence);
-            }
+    private async generateContentForWordTranslation(text:string, languageText:Languages, languageTranslate: Languages, id_text:number) {
 
-            answers.push({answer: answer,original: e.original, mustReplacePosition: e.mustReplacePosition, userAnswer: '', isCorrectAnswer: false});
+        const answers:IPracticeInfo['answers'] = [];
+        let translatedWords = await this.vocabularyService.getData(id_text);
+
+        const result  = this.findWordPosition(text);
+
+        if(!translatedWords) {
+            const arr = result.reduce((acc, currentValue) => {
+                acc.push(currentValue.original, currentValue.sentence);
+                return acc;
+            }, [])
+
+            translatedWords = await this.aiService.translateWordsInContext(arr, languageText, languageTranslate);
+
+            await this.vocabularyService.add(translatedWords, id_text, languageText, languageTranslate);
         }
+
+        result.forEach((e, i) => {
+            answers.push({answer: translatedWords[i].translation,original: e.original, mustReplacePosition: e.mustReplacePosition, userAnswer: '', isCorrectAnswer: false})
+        });
+
         return answers;
     }
 }

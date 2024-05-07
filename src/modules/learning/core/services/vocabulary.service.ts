@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@nestjs/common';
 import {knex} from 'knex';
-import {Languages} from '../../../../core';
+import { IPracticeInfo, Languages } from '../../../../core';
 
 @Injectable()
 export class VocabularyService {
@@ -8,13 +8,13 @@ export class VocabularyService {
     constructor(@Inject('db') private readonly knexManager: knex.Knex<any, unknown[]>) {
     }
 
-    async add(languageWord:Languages,languageTranslate:Languages,word:string,translation:string, sentence: string) {
-        await this.knexManager('vocabulary').insert({languageWord, languageTranslate, word, translation, sentence});
+    async add(arr:IPracticeInfo['answers'], id_text: number, languageSentence:Languages,languageTranslation: Languages) {
+        await this.knexManager('vocabulary').insert({data: JSON.stringify(arr), id_text, languageSentence, languageTranslation});
     }
 
-    async getTranslation(word: string, languageWord:Languages,languageTranslate:Languages, sentence: string) {
-        const result = await this.knexManager('vocabulary').select('*').where({languageWord, languageTranslate, word, sentence});
+    async getData(id_text: number) {
+        const result = await this.knexManager('vocabulary').select('*').where({id_text});
         if(!result.length) return false;
-        return result[0].translation;
+        return JSON.parse(result[0].data);
     }
 }

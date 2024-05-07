@@ -1,6 +1,6 @@
 import {Body, Controller, Post, UseFilters, UsePipes, ValidationPipe, Get, Inject} from '@nestjs/common';
 import { AiService } from '../../core/services/ai.service';
-import {generationTextDto, translationTextDto} from './core/dto/ai.dto';
+import { correctionTextDto, generationTextDto, translationTextDto } from './core/dto/ai.dto';
 import {LearningService} from '../../core/services/learning.service';
 import {User, UserData} from '../../../../core';
 @Controller('learning/ai')
@@ -22,10 +22,10 @@ export class AiController {
     return {statusCode: 200, error: '', message: 'success', translatedText: result};
   }
 
-  // @Post('/correct-essay')
-  // @UsePipes(new ValidationPipe())
-  // async correctText(@Body() dto: correctionTextDto) {
-  //   const result = await this.aiService.correctText(dto);
-  //   return {statusCode: 200, error: '', message: 'success', correctedText: result};
-  // }
+  @Post('/correct-essay')
+  @UsePipes(new ValidationPipe())
+  async correctText(@Body() dto: correctionTextDto) {
+    const result = await this.aiService.correctText(dto);
+    return {statusCode: 200, error: '', message: 'success', correctedText: result};
+  }
 }

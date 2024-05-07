@@ -26,18 +26,15 @@ export class AiService {
         return result.translation;
     }
 
-    async translateWordOrPhrase(sentence: string, wordOrPhrase: string, languageSentence: Languages, languageTranslation: Languages) {
-        try {
-            const result = await this.herc.question({
-                model: 'v3',
-                content: `I have an ${languageSentence} sentence '${sentence}'. Translate '${wordOrPhrase}' in the context in ${languageTranslation}. In reply must be only the translation`
-            })
-            return result.reply.replace(/['']/g, "");
-        }
-        catch (e) {
-            return await this.translateWordOrPhrase(sentence, wordOrPhrase, languageSentence, languageTranslation);
-        }
+    async translateWordsInContext(arr: {sentence: string, wordOrPhrase: string}[],  languageSentence: Languages, languageTranslation: Languages) {
+        const result = await this.herc.question({
+            model: 'v3',
+            content: `Translate each property "wordOrPhrase" in their sentence. 
+            Data is JSON, reply must have {sentence,  wordOrPhrase, translation} style in 
+            ONLY JSON(without \`\`\`json and others) format like array. Data: ${JSON.stringify(arr)}. language sentences is ${languageSentence}, language translation is ${languageTranslation}`
+        })
 
+        return JSON.parse(result.reply) as {word:string,translation:string, sentence: string}[];
     }
 
     async correctText(input: {essay: string,languageExplanation: string}) {

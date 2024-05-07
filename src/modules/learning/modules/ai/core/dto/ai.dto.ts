@@ -36,3 +36,11 @@ export class translationTextDto {
     languageTranslate: Languages;
 }
 
+export class correctionTextDto {
+    @IsNotEmpty()
+    @IsString()
+    essay: string;
+
+    @IsEnum(Languages)
+    languageExplanation: Languages
+}

@@ -21,7 +21,7 @@ export class PracticeController {
   @UsePipes(new ValidationPipe())
   async startPractice(@Body() dto: startPracticeDto, @UserData() userData: User) {
     const result = await this.practiceService.getText(dto.id_text);
-    const answers:IPracticeInfo['answers'] = await this.alghoritmService.start(dto.model, result.text, result.language_text, userData.native_language) ;
+    const answers:IPracticeInfo['answers'] = await this.alghoritmService.start(dto.model, result.text, result.language_text, userData.native_language, dto.id_text) ;
     await this.practiceService.startPractice(userData.id, dto.id_text, dto.model, answers);
     return {statusCode: 200, error: '', message: 'success'};
   }
